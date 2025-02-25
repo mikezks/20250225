@@ -11,12 +11,11 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    component: HomeComponent
+    loadComponent: () => import('./shared/feature-core/home/home.component')
   },
   {
     path: 'booking',
-    loadChildren: () => import('./booking/booking.module')
-      .then(esm => esm.BookingModule)
+    loadChildren: () => import('./booking/booking.routes')
   },
   {
     path: 'checkin',

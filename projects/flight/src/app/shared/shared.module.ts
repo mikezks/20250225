@@ -5,11 +5,9 @@ import { HomeComponent } from './feature-core';
 
 
 @NgModule({
-  declarations: [
-    HomeComponent
-  ],
   imports: [
-    CommonModule
+    CommonModule,
+    HomeComponent
   ],
   exports: [
     HomeComponent
