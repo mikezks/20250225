@@ -1,5 +1,7 @@
-import { Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { HomeComponent } from './shared/feature-core';
+import { inject } from '@angular/core';
+import { ACCESS_ALLOWED } from './app.provider';
 
 
 export const APP_ROUTES: Routes = [
@@ -14,7 +16,10 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'booking',
-    loadChildren: () => import('./booking')
+    loadChildren: () => import('./booking'),
+    canMatch: [
+      () => inject(ACCESS_ALLOWED) || inject(Router).createUrlTree(['/home'])
+    ]
   },
   {
     path: 'checkin',
