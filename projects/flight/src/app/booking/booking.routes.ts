@@ -5,6 +5,8 @@ import { FlightBookingComponent, FlightEditComponent, FlightSearchComponent } fr
 import { TicketEffects } from "./logic-flight/+state/effects";
 import { ticketFeature } from "./logic-flight/+state/reducer";
 import { resolveFlight } from "./logic-flight/data-access/flight.resolver";
+import { provideNavigationConfig } from "../shared/logic-navigation";
+import { BOOKING_NAVIGATION } from "./booking.navigation";
 
 
 export const BOOKING_ROUTES: Routes = [
@@ -12,6 +14,7 @@ export const BOOKING_ROUTES: Routes = [
     path: '',
     component: FlightBookingComponent,
     providers: [
+      provideNavigationConfig(BOOKING_NAVIGATION),
       provideState(ticketFeature),
       provideEffects([TicketEffects]),
     ],
@@ -41,7 +44,11 @@ export const BOOKING_ROUTES: Routes = [
             }
           }
         ]
-      }
+      },
+      /* {
+        path: 'my-flights',
+        component: MyFlightsComponent,
+      } */
     ]
   }
 ];

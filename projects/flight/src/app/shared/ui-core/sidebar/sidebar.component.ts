@@ -1,12 +1,11 @@
-import { AsyncPipe, NgClass } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationComponent } from '../../ui-common';
 
 
 @Component({
   selector: 'app-sidebar-cmp',
   imports: [
-    RouterLink, RouterLinkActive,
+    NavigationComponent
   ],
   template: `
     <div class="sidebar-wrapper">
@@ -21,37 +20,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         </a>
       </div>
 
-      <ul class="nav">
-
-        <li routerLinkActive="active">
-          <a routerLink="home">
-            <i class="icon icon-home"></i>
-            <p>Home</p>
-          </a>
-        </li>
-
-        <li routerLinkActive="active">
-          <a routerLink="booking">
-            <i class="icon icon-booking"></i>
-            <p>Booking</p>
-          </a>
-        </li>
-
-        <li routerLinkActive="active">
-          <a routerLink="checkin">
-            <i class="icon icon-checkin"></i>
-            <p>Checkin</p>
-          </a>
-        </li>
-
-        <li routerLinkActive="active">
-          <a routerLink="boarding">
-            <i class="icon icon-boarding"></i>
-            <p>Boarding</p>
-          </a>
-        </li>
-
-      </ul>
+      <app-navigation />
 
     </div>
   `
