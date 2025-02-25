@@ -17,6 +17,6 @@ export function authInterceptor(
   }
 
   return next(req).pipe(
-    tap(resp => console.log('HTTP Response', resp))
+    tap(resp => console.log('HTTP Response Log Info from Root', resp))
   );
 }
