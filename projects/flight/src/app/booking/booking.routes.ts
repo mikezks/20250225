@@ -1,4 +1,3 @@
-import { provideHttpClient, withInterceptors, withRequestsMadeViaParent } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import { provideEffects } from "@ngrx/effects";
 import { provideState } from "@ngrx/store";
@@ -6,8 +5,6 @@ import { FlightBookingComponent, FlightEditComponent, FlightSearchComponent } fr
 import { TicketEffects } from "./logic-flight/+state/effects";
 import { ticketFeature } from "./logic-flight/+state/reducer";
 import { resolveFlight } from "./logic-flight/data-access/flight.resolver";
-import { tap } from "rxjs";
-import { FlightService } from "./api-boarding";
 
 
 export const BOOKING_ROUTES: Routes = [
@@ -15,17 +12,8 @@ export const BOOKING_ROUTES: Routes = [
     path: '',
     component: FlightBookingComponent,
     providers: [
-      provideHttpClient(
-        withInterceptors([
-          (req, next) => next(req).pipe(
-            tap(resp => console.log('HTTP Response Log Info from Booking', resp))
-          )
-        ]),
-        withRequestsMadeViaParent()
-      ),
       provideState(ticketFeature),
       provideEffects([TicketEffects]),
-      FlightService
     ],
     children: [
       {
