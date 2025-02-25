@@ -25,14 +25,14 @@ import { ClickLocal } from '../click-local/click-local.directive';
           </li>
         } @else {
           <li [class.menu-open]="item.open" >
-            <a (click)="nav.toggleMenu(item.route)">
+            <!-- <a (click)="nav.toggleMenu(item.route)">
               <i [ngClass]="'icon icon-' + item.icon"></i>
               <p>
                 {{ item.label }}
                 <b class="caret"></b>
               </p>
-            </a>
-            <!-- <a
+            </a> -->
+            <a
               [routerLink]="item.route.split('/')"
               routerLinkActive
               (isActiveChange)="nav.toggleMenu(item.route, $event)"
@@ -42,7 +42,7 @@ import { ClickLocal } from '../click-local/click-local.directive';
                 {{ item.label }}
                 <b (clickLocal)="nav.toggleMenu(item.route)" class="caret"></b>
               </p>
-            </a> -->
+            </a>
 
             @if (item.open) {
               <div class="collapse show">
