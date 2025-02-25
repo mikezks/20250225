@@ -1,10 +1,18 @@
+import { DatePipe, NgStyle } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Flight } from '../../logic-flight';
 
 
 @Component({
   selector: 'app-flight-card',
-  standalone: false,
+  standalone: true,
+  imports: [
+    NgStyle, DatePipe,
+    RouterLink
+    // CommonModule,
+    // RouterModule
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
