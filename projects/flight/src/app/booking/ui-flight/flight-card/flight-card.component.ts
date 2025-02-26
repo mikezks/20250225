@@ -1,5 +1,5 @@
 import { DatePipe, NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, effect, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, effect, input, linkedSignal, model, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { injectCdBlink } from '../../../shared/util-cd-visualizer';
 import { Flight } from '../../logic-flight';
@@ -18,12 +18,12 @@ import { Flight } from '../../logic-flight';
       [ngStyle]="{ 'background-color': selected() ? 'rgb(204, 197, 185)' : 'white' }"
     >
       <div class="card-header">
-        <h2 class="card-title">{{ item().from }} - {{ item().to }}</h2>
+        <h2 class="card-title">{{ flightState().from }} - {{ flightState().to }}</h2>
       </div>
 
       <div class="card-body">
-        <p>Flight-No.: {{ item().id }}</p>
-        <p>Date: {{ item().date | date : "dd.MM.yyyy HH:mm" }}</p>
+        <p>Flight-No.: {{ flightState().id }}</p>
+        <p>Date: {{ flightState().date | date : "dd.MM.yyyy HH:mm" }}</p>
         <p>
           <button
             (click)="toggleSelection()"
@@ -31,7 +31,7 @@ import { Flight } from '../../logic-flight';
             style="min-width: 85px; margin-right: 5px"
           >{{ selected() ? "Remove" : "Select" }}</button>
           <a
-            [routerLink]="['../edit', item().id]"
+            [routerLink]="['../edit', flightState().id]"
             class="btn btn-success btn-sm"
             style="min-width: 85px; margin-right: 5px"
           >Edit</a>
@@ -53,12 +53,17 @@ export class FlightCardComponent {
   readonly item = input.required<Flight>();
   readonly itemChange = output<Flight>();
   readonly selected = model(false);
+  readonly flightState = linkedSignal({
+    source: this.item,
+    computation: item => item
+  });
 
   toggleSelection(): void {
     this.selected.update(curr => !curr);
+    this.flightState.update(curr => ({ ...curr, from: 'Oslo' }));
   }
 
   delay(): void {
-    this.itemChange.emit(this.item());
+    this.itemChange.emit(this.flightState());
   }
 }

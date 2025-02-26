@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject, input, linkedSignal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { routerFeature } from '../../../shared/logic-router-state';
@@ -16,6 +16,15 @@ export class FlightEditComponent implements OnChanges {
   private store = inject(Store);
 
   @Input() flight = initialFlight;
+  cities = input([
+    'Hamburg',
+    'London',
+    'Paris'
+  ]);
+  selectedCities = linkedSignal({
+    source: this.cities,
+    computation: cities => cities[0]
+  });
 
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
@@ -29,6 +38,14 @@ export class FlightEditComponent implements OnChanges {
     this.store.select(routerFeature.selectRouteParams).subscribe(
       params => console.log(params)
     );
+
+    this.selectedCities.set('Hamburg');
+
+    const usCities = [
+      'New York',
+      'LA',
+      'San Francisco'
+    ];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
