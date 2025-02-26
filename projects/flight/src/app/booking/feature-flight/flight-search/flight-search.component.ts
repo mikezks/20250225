@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Injector, runInInjectionContext } from '@angular/core';
+import { Component, computed, effect, inject, Injector, runInInjectionContext, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, FlightFilter, injectTicketsFacade } from '../../logic-flight';
 import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
 import { FlightService } from '../../api-boarding';
+import { SIGNAL } from '@angular/core/primitives/signals';
 
 
 @Component({
@@ -18,36 +19,38 @@ import { FlightService } from '../../api-boarding';
 })
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
-  // private injector = inject(Injector);
 
-  protected filter = {
+  protected filter = signal({
     from: 'London',
     to: 'New York',
     urgent: false
-  };
+  });
+  protected readonly route = computed(
+    () => 'From ' + this.filter().from + ' to ' + this.filter().to + '.'
+  );
   protected basket: Record<number, boolean> = {
     3: true,
     5: true
   };
   protected flights$ = this.ticketsFacade.flights$;
 
+  constructor() {
+    const effectCallback = () => {
+      console.log(this.route())
+    };
+    let activeConsumer = effect(effectCallback);
+
+    console.log(this.route[SIGNAL]);
+  }
+
   protected search(filter: FlightFilter): void {
-    /* inject(FlightService)
-    const flightService = runInInjectionContext(
-      this.injector,
-      () => inject(FlightService)
-    );
-    flightService.find('Paris', '').subscribe(console.log);
+    this.filter.set(filter);
 
-    this.injector.get(FlightService).find('Wien', '').subscribe(console.log); */
-
-    this.filter = filter;
-
-    if (!this.filter.from || !this.filter.to) {
+    if (!this.filter().from || !this.filter().to) {
       return;
     }
 
-    this.ticketsFacade.search(this.filter);
+    this.ticketsFacade.search(this.filter());
   }
 
   protected delay(flight: Flight): void {
