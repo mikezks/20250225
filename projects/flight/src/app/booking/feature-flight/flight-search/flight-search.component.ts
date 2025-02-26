@@ -21,14 +21,6 @@ import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
 })
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
-  private readonly flightService = inject(FlightService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  private readonly londonFlights = this.flightService.find('London', '').pipe(
-    delay(5_000),
-    tap(flights => console.log(flights)),
-    // takeUntilDestroyed()
-  );
 
   protected filter = signal({
     from: 'London',
@@ -45,26 +37,10 @@ export class FlightSearchComponent {
   protected flights = this.ticketsFacade.flights;
 
   constructor() {
-    const effectCallback = () => {
-      console.log(this.route())
-    };
-    let activeConsumer = effect(effectCallback);
-
-    console.log(this.route[SIGNAL]);
-
-    // this.londonFlights.subscribe();
-
-    this.destroyRef.onDestroy(() => console.log('DESTROYED: Flight Search'));
+    effect(() => console.log(this.route()));
   }
 
   protected search(filter: FlightFilter): void {
-    this.flightService.find('London', '').pipe(
-      delay(5_000),
-      tap(flights => console.log(flights)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
-
-
     this.filter.set(filter);
 
     if (!this.filter().from || !this.filter().to) {
