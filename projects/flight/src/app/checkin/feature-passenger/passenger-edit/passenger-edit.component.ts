@@ -1,7 +1,11 @@
 import { NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { validatePassengerStatus } from '../../util-validation';
+import { initialPassenger } from '../../logic-passenger';
+import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
+import { switchMap } from 'rxjs';
 
 
 @Component({
@@ -13,6 +17,17 @@ import { validatePassengerStatus } from '../../util-validation';
   templateUrl: './passenger-edit.component.html'
 })
 export class PassengerEditComponent {
+  private readonly passengerService = inject(PassengerService);
+
+  readonly id = input(0);
+  private readonly id$ = toObservable(this.id);
+  private readonly passenger$ = this.id$.pipe(
+    switchMap(id => this.passengerService.findById(id))
+  );
+  private readonly passenger = toSignal(this.passenger$, {
+    initialValue: initialPassenger
+  });
+
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
     firstName: [''],
@@ -22,6 +37,10 @@ export class PassengerEditComponent {
       validatePassengerStatus(['A', 'B', 'C'])
     ]]
   });
+
+  constructor() {
+    effect(() => this.editForm.patchValue(this.passenger()));
+  }
 
   protected save(): void {
     console.log(this.editForm.value);
