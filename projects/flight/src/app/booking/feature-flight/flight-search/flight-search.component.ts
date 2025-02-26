@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SIGNAL } from '@angular/core/primitives/signals';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +37,33 @@ export class FlightSearchComponent {
   protected flights = this.ticketsFacade.flights;
 
   constructor() {
-    effect(() => console.log(this.route()));
+    effect(() => {
+      const route = this.route();
+      const filter = untracked(() => this.filter());
+      untracked(() => this.logRoute(route));
+    });
+
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Barcelona' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Madrid' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Paris' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Rome' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Athens' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Berlin' }));
+    console.log(this.filter().from);
+
+    // Glitch-free update behavior
+    const counter = signal(0);
+    const isEven = computed(() => counter() % 2 === 0);
+  }
+
+  private logRoute(route: string): void {
+    console.log(route);
   }
 
   protected search(filter: FlightFilter): void {

@@ -54,13 +54,6 @@ export class FlightCardComponent {
   readonly itemChange = output<Flight>();
   readonly selected = model(false);
 
-  constructor() {
-    const effectRef = effect(() => {
-      console.log(this.item());
-      effectRef.destroy();
-    });
-  }
-
   toggleSelection(): void {
     this.selected.update(curr => !curr);
   }
