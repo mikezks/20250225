@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, Injector, runInInjectionContext, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SIGNAL } from '@angular/core/primitives/signals';
 import { FormsModule } from '@angular/forms';
+import { delay, tap } from 'rxjs';
+import { FlightService } from '../../api-boarding';
 import { Flight, FlightFilter, injectTicketsFacade } from '../../logic-flight';
 import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
-import { FlightService } from '../../api-boarding';
-import { SIGNAL } from '@angular/core/primitives/signals';
 
 
 @Component({
@@ -19,6 +21,14 @@ import { SIGNAL } from '@angular/core/primitives/signals';
 })
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
+  private readonly flightService = inject(FlightService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly londonFlights = this.flightService.find('London', '').pipe(
+    delay(5_000),
+    tap(flights => console.log(flights)),
+    // takeUntilDestroyed()
+  );
 
   protected filter = signal({
     from: 'London',
@@ -41,9 +51,20 @@ export class FlightSearchComponent {
     let activeConsumer = effect(effectCallback);
 
     console.log(this.route[SIGNAL]);
+
+    // this.londonFlights.subscribe();
+
+    this.destroyRef.onDestroy(() => console.log('DESTROYED: Flight Search'));
   }
 
   protected search(filter: FlightFilter): void {
+    this.flightService.find('London', '').pipe(
+      delay(5_000),
+      tap(flights => console.log(flights)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
+
+
     this.filter.set(filter);
 
     if (!this.filter().from || !this.filter().to) {
