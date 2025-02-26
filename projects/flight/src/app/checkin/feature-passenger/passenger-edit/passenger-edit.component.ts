@@ -1,17 +1,19 @@
 import { NgIf } from '@angular/common';
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, numberAttribute, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { validatePassengerStatus } from '../../util-validation';
 import { initialPassenger } from '../../logic-passenger';
 import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
 import { switchMap } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-passenger-edit',
   imports: [
     NgIf,
+    RouterLink,
     ReactiveFormsModule
   ],
   templateUrl: './passenger-edit.component.html'
@@ -19,12 +21,8 @@ import { switchMap } from 'rxjs';
 export class PassengerEditComponent {
   private readonly passengerService = inject(PassengerService);
 
-  readonly id = input(0);
-  private readonly passenger = toSignal(
-    toObservable(this.id).pipe(
-      switchMap(id => this.passengerService.findById(id))
-    ), { initialValue: initialPassenger }
-  );
+  readonly id = input(0, { transform: numberAttribute });
+  protected readonly passengerResource = this.passengerService.findByIdAsResource(this.id);
 
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
@@ -37,7 +35,18 @@ export class PassengerEditComponent {
   });
 
   constructor() {
-    effect(() => this.editForm.patchValue(this.passenger()));
+    effect(() => {
+      const passenger = this.passengerResource.value();
+
+      if (passenger) {
+        this.editForm.patchValue(passenger);
+      }
+    });
+
+    setTimeout(() => this.passengerResource.update(curr => ({
+      ...(curr || initialPassenger ),
+      firstName: 'Michael'
+    })), 3_000);
   }
 
   protected save(): void {
