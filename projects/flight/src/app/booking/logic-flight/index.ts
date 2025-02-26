@@ -1,5 +1,6 @@
 
 export * from './+state';
+export * from './+state/booking.store';
 export * from './model/basket';
 export * from './model/flight';
 export * from './model/flight-filter';
